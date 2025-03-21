@@ -1,0 +1,28 @@
+name: my_archive_idea
+description: "나의 아이디어를 기록하는 앱"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  sqflite: ^2.4.2
+  flutter_rating_bar: ^4.0.1
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  assets:
+    - assets/
+  uses-material-design: true
