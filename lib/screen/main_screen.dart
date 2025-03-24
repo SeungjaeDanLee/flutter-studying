@@ -46,14 +46,55 @@ class _MainScreenState extends State<MainScreen> {
         child: ListView.builder(
           itemCount: lstIdeaInfo.length,
           itemBuilder: (context, index) {
-            return listItem(index);
+            return GestureDetector(
+              child: listItem(index),
+              onTap: () {
+                var result = Navigator.pushNamed(
+                  context,
+                  '/detail',
+                  arguments: lstIdeaInfo[index],
+                );
+                if (result != null) {
+                  String msg = "";
+                  if (result == 'update') {
+                    // 수정 완료 (update)
+                    msg = '아이디어가 수정 되었습니다.';
+                  } else if (result == 'delete') {
+                    // 삭제 완료 (delete)
+                    msg = '아이디어가 삭제 되었습니다.';
+                  }
+
+                  // refresh list
+                  getIdeaInfo();
+
+                  // show snackbar
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(msg)),
+                    );
+                  }
+                }
+              },
+            );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           // 새 아이디어 작성 화면으로 이동
-          Navigator.pushNamed(context, '/edit');
+          var result = await Navigator.pushNamed(context, '/edit');
+
+          // A -> B -> A 화면으로 돌아왔을 때 (B로부터 결과 값을 전달 받았을때 !)
+          if (result != null) {
+            // 아이디어 리스트 다시 불러오기
+            getIdeaInfo();
+            // 아이디어 작성이 완료되었다는 스낵바 띄우기
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('새로운 아이디어가 추가되었습니다.')),
+              );
+            }
+          }
         },
         child: Image.asset('assets/idea.png', width: 48, height: 48),
         backgroundColor: Color(0xff7f52fd).withOpacity(0.7),
@@ -137,6 +178,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Future setInsertIdeaInfo() async {
     // 삽입 하는 메서드
+    await dbHelper.initDatabase();
     await dbHelper.initDatabase();
     await dbHelper.insertIdeaInfo(
       IdeaInfo(
